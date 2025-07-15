@@ -1,0 +1,76 @@
+{
+    "name": "Labo Insight Dev Environment",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "context": "."
+    },
+    
+    "features": {
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "20"
+      },
+      "ghcr.io/devcontainers/features/python:1": {
+        "version": "3.11"
+      },
+      "ghcr.io/devcontainers/features/git:1": {}
+    },
+  
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-vscode.vscode-json",
+          "bradlc.vscode-tailwindcss",
+          "esbenp.prettier-vscode",
+          "ms-python.python",
+          "coderabbit.coderabbit-vscode"
+        ],
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash",
+          "terminal.integrated.profiles.linux": {
+            "bash": {
+              "path": "/bin/bash"
+            }
+          }
+        }
+      }
+    },
+  
+    "postCreateCommand": [
+      "bash",
+      "/workspace/.devcontainer/setup.sh"
+    ],
+  
+    "remoteUser": "vscode",
+    
+    "mounts": [
+      "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+      "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+    ],
+  
+    "workspaceFolder": "/workspace",
+  
+    "forwardPorts": [3000, 8000, 9000],
+  
+    "portsAttributes": {
+      "3000": {
+        "label": "Frontend Dev Server"
+      },
+      "8000": {
+        "label": "API Server"
+      },
+      "9000": {
+        "label": "Database Admin"
+      }
+    },
+  
+    "containerEnv": {
+      "TERM": "xterm-256color",
+      "LANG": "ja_JP.UTF-8",
+      "LC_ALL": "ja_JP.UTF-8",
+      "SSH_AUTH_SOCK": "/home/vscode/.ssh/ssh_auth_sock"
+    },
+  
+    "runArgs": [
+      "--init"
+    ]
+  }
