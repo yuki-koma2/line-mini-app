@@ -11,7 +11,7 @@ const Home = () => {
   useEffect(() => {
     // LIFFの初期化
     liff.init({
-      liffId: 'YOUR_LIFF_ID' // あなたのLIFF IDに置き換えてください
+      liffId: process.env.NEXT_PUBLIC_LIFF_ID! // あなたのLIFF IDに置き換えてください
     })
     .then(() => {
       // 初期化成功
