@@ -59,6 +59,11 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/
 
 - **type:** `feat` (new feature), `fix` (bug fix), `docs` (documentation), `style` (formatting, missing semicolons, etc.), `refactor` (code refactoring), `test` (adding missing tests), `chore` (updating grunt tasks etc).
 
+### Commit Granularity and Detail
+
+-   **Commit in appropriate units:** Each commit should represent a single logical change or a small, cohesive set of related changes. Avoid large, monolithic commits that combine unrelated work.
+-   **Detailed commit messages:** The commit message body should provide a comprehensive explanation of *what* was changed and *why*. Include details about the thought process, design decisions, challenges encountered, and how they were resolved. The more context, the better. This serves as a valuable record of the development process.
+
 - **Development:** `npm run dev`
 - **Build:** `npm run build`
 - **Start:** `npm run start`
