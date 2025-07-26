@@ -1069,3 +1069,412 @@ def quality_decision(layer, complexity, time_constraint, user_values):
 - 対立の促進と方向性の管理
 - 表面的合意への誘導を避ける
 - 統合解創出の支援と品質確保
+
+
+
+# Claude Code Spec-Driven Development
+
+This project implements Kiro-style Spec-Driven Development for Claude Code using hooks and slash commands.
+
+## Project Context
+
+### Project Steering
+- Product overview: `.kiro/steering/product.md`
+- Technology stack: `.kiro/steering/tech.md`
+- Project structure: `.kiro/steering/structure.md`
+- Custom steering docs for specialized contexts
+
+### Active Specifications
+- Current spec: Check `.kiro/specs/` for active specifications
+- Use `/kiro:spec-status [feature-name]` to check progress
+
+## Development Guidelines
+- Think in English, but generate responses in Japanese (思考は英語、回答の生成は日本語で行うように)
+
+## Spec-Driven Development Workflow
+
+### Phase 0: Steering Generation (Recommended)
+
+#### Kiro Steering (`.kiro/steering/`)
+```
+/kiro:steering-init          # Generate initial steering documents
+/kiro:steering-update        # Update steering after changes
+/kiro:steering-custom        # Create custom steering for specialized contexts
+```
+
+**Note**: For new features or empty projects, steering is recommended but not required. You can proceed directly to spec-requirements if needed.
+
+### Phase 1: Specification Creation
+```
+/kiro:spec-init [feature-name]           # Initialize spec structure only
+/kiro:spec-requirements [feature-name]   # Generate requirements → Review → Edit if needed
+/kiro:spec-design [feature-name]         # Generate technical design → Review → Edit if needed
+/kiro:spec-tasks [feature-name]          # Generate implementation tasks → Review → Edit if needed
+```
+
+### Phase 2: Progress Tracking
+```
+/kiro:spec-status [feature-name]         # Check current progress and phases
+```
+
+## Spec-Driven Development Workflow
+
+Kiro's spec-driven development follows a strict **3-phase approval workflow**:
+
+### Phase 1: Requirements Generation & Approval
+1. **Generate**: `/kiro:spec-requirements [feature-name]` - Generate requirements document
+2. **Review**: Human reviews `requirements.md` and edits if needed
+3. **Approve**: Manually update `spec.json` to set `"requirements": true`
+
+### Phase 2: Design Generation & Approval
+1. **Generate**: `/kiro:spec-design [feature-name]` - Generate technical design (requires requirements approval)
+2. **Review**: Human reviews `design.md` and edits if needed
+3. **Approve**: Manually update `spec.json` to set `"design": true`
+
+### Phase 3: Tasks Generation & Approval
+1. **Generate**: `/kiro:spec-tasks [feature-name]` - Generate implementation tasks (requires design approval)
+2. **Review**: Human reviews `tasks.md` and edits if needed
+3. **Approve**: Manually update `spec.json` to set `"tasks": true`
+
+### Implementation
+Only after all three phases are approved can implementation begin.
+
+**Key Principle**: Each phase requires explicit human approval before proceeding to the next phase, ensuring quality and accuracy throughout the development process.
+
+## Development Rules
+
+1. **Consider steering**: Run `/kiro:steering-init` before major development (optional for new features)
+2. **Follow the 3-phase approval workflow**: Requirements → Design → Tasks → Implementation
+3. **Manual approval required**: Each phase must be explicitly approved by human review
+4. **No skipping phases**: Design requires approved requirements; Tasks require approved design
+5. **Update task status**: Mark tasks as completed when working on them
+6. **Keep steering current**: Run `/kiro:steering-update` after significant changes
+7. **Check spec compliance**: Use `/kiro:spec-status` to verify alignment
+
+## Automation
+
+This project uses Claude Code hooks to:
+- Automatically track task progress in tasks.md
+- Check spec compliance
+- Preserve context during compaction
+- Detect steering drift
+
+### Task Progress Tracking
+
+When working on implementation:
+1. **Manual tracking**: Update tasks.md checkboxes manually as you complete tasks
+2. **Progress monitoring**: Use `/kiro:spec-status` to view current completion status
+3. **TodoWrite integration**: Use TodoWrite tool to track active work items
+4. **Status visibility**: Checkbox parsing shows completion percentage
+
+## Getting Started
+
+1. Initialize steering documents: `/kiro:steering-init`
+2. Create your first spec: `/kiro:spec-init [your-feature-name]`
+3. Follow the workflow through requirements, design, and tasks
+
+## Kiro Steering Details
+
+Kiro-style steering provides persistent project knowledge through markdown files:
+
+### Core Steering Documents
+- **product.md**: Product overview, features, use cases, value proposition
+- **tech.md**: Architecture, tech stack, dev environment, commands, ports
+- **structure.md**: Directory organization, code patterns, naming conventions
+
+### Custom Steering
+Create specialized steering documents for:
+- API standards
+- Testing approaches
+- Code style guidelines
+- Security policies
+- Database conventions
+- Performance standards
+- Deployment workflows
+
+### Inclusion Modes
+- **Always Included**: Loaded in every interaction (default)
+- **Conditional**: Loaded for specific file patterns (e.g., `"*.test.js"`)
+- **Manual**: Loaded on-demand with `#filename` reference
+
+
+
+
+## 使い方
+
+### 1. 新規プロジェクトの場合
+
+```bash
+# オプション: プロジェクトステアリング生成（推奨だが必須ではない）
+/kiro:steering-init
+
+# ステップ1: 新機能の仕様作成開始（詳細な説明を含める）
+/kiro:spec-init "ユーザーがPDFをアップロードして、その中の図表を抽出し、AIが内容を説明する機能を作りたい。技術スタックはNext.js、TypeScript、Tailwind CSSを使用。"
+
+# ステップ2: 要件定義（自動生成されたfeature-nameを使用）
+/kiro:spec-requirements pdf-diagram-extractor
+# → .kiro/specs/pdf-diagram-extractor/requirements.md をレビュー・編集
+
+# ステップ3: 要件承認（手動）
+# spec.json で "requirements": true に設定
+
+# ステップ4: 技術設計
+/kiro:spec-design pdf-diagram-extractor
+# → .kiro/specs/pdf-diagram-extractor/design.md をレビュー・編集
+
+# ステップ5: 設計承認（手動）
+# spec.json で "design": true に設定
+
+# ステップ6: タスク生成
+/kiro:spec-tasks pdf-diagram-extractor
+# → .kiro/specs/pdf-diagram-extractor/tasks.md をレビュー・編集
+
+# ステップ7: タスク承認（手動）
+# spec.json で "tasks": true に設定
+
+# ステップ8: 実装開始
+```
+
+### 2. 既存プロジェクトへの機能追加
+
+```bash
+# オプション: ステアリング更新（プロジェクトに大きな変更があった場合）
+/kiro:steering-update
+
+# または、既存プロジェクトでも初めてステアリングを作成する場合
+/kiro:steering-init
+
+# ステップ1: 新機能の仕様作成開始
+/kiro:spec-init "新しい機能の詳細な説明をここに記述"
+# 以降は新規プロジェクトと同じ
+```
+
+### 3. 進捗確認
+
+```bash
+# 特定機能の進捗確認
+/kiro:spec-status my-feature
+
+# 現在のフェーズ、承認状況、タスク進捗が表示される
+```
+
+## Spec-Driven Development プロセス
+
+### プロセスフロー図
+
+このフローでは、各フェーズで「レビュー・承認」にspec.jsonの更新が含まれている。
+
+**ステアリング文書**は、プロジェクトに関する永続的な知識（アーキテクチャ、技術スタック、コード規約など）を記録するドキュメントです。作成・更新はオプションだが、プロジェクトの長期的な保守性を高めるために推奨される。
+
+```mermaid
+graph TD
+    A["プロジェクト開始"] --> B{"ステアリング<br/>文書化？"}
+    B -->|はい| C["/kiro:steering-init"]
+    B -->|いいえ| D["/kiro:spec-init"]
+    C --> D
+    
+    D --> E["/kiro:spec-requirements"]
+    E --> F["requirements.md"]
+    F --> G{"満足？"}
+    G -->|いいえ| G1["編集・修正"]
+    G1 --> F
+    G -->|はい| H["spec.json: requirements=true"]
+    
+    H --> I["/kiro:spec-design"]
+    I --> J["design.md"]
+    J --> K{"満足？"}
+    K -->|いいえ| K1["編集・修正"]
+    K1 --> J
+    K -->|はい| L["spec.json: design=true"]
+    
+    L --> M["/kiro:spec-tasks"]
+    M --> N["tasks.md"]
+    N --> O{"満足？"}
+    O -->|いいえ| O1["編集・修正"]
+    O1 --> N
+    O -->|はい| P["spec.json: tasks=true"]
+    
+    P --> Q["実装開始"]
+    Q --> R["/kiro:spec-status"]
+    R --> S{"完了？"}
+    S -->|いいえ| Q
+    S -->|はい| T["機能完成"]
+    
+    T --> U{"ステアリング<br/>更新？"}
+    U -->|はい| V["/kiro:steering-update"]
+    U -->|いいえ| W["完了"]
+    V --> W
+    
+    %% スタイル定義
+    style A fill:#f8f9fa,stroke:#495057
+    style C fill:#495057,stroke:#343a40,color:#ffffff
+    style D fill:#495057,stroke:#343a40,color:#ffffff
+    style E fill:#495057,stroke:#343a40,color:#ffffff
+    style I fill:#495057,stroke:#343a40,color:#ffffff
+    style M fill:#495057,stroke:#343a40,color:#ffffff
+    style R fill:#495057,stroke:#343a40,color:#ffffff
+    style V fill:#495057,stroke:#343a40,color:#ffffff
+    style F fill:#f8f9fa,stroke:#6c757d
+    style J fill:#f8f9fa,stroke:#6c757d
+    style N fill:#f8f9fa,stroke:#6c757d
+    style H fill:#e8f5e9,stroke:#28a745
+    style L fill:#e8f5e9,stroke:#28a745
+    style P fill:#e8f5e9,stroke:#28a745
+    style Q fill:#adb5bd,stroke:#495057
+    style T fill:#6c757d,stroke:#495057,color:#ffffff
+    style W fill:#6c757d,stroke:#495057,color:#ffffff
+```
+
+## スラッシュコマンド一覧
+
+### 🚀 Phase 0: プロジェクトステアリング（オプション）
+
+| コマンド | 用途 | 使用タイミング |
+|---------|------|---------------|
+| `/kiro:steering-init` | 初期ステアリング文書の生成 | 新規/既存プロジェクトで文書化が必要な時 |
+| `/kiro:steering-update` | ステアリング文書の更新 | 大きな変更後、定期的なメンテナンス時 |
+| `/kiro:steering-custom` | カスタムステアリング文書の作成 | 特殊な規約やガイドラインが必要な時 |
+
+**注意**: ステアリング文書は推奨されるが必須ではない。小規模な機能追加や試験的な開発では省略可能。
+
+#### ステアリング文書の種類
+- **product.md**: プロダクト概要、機能、ユースケース
+- **tech.md**: アーキテクチャ、技術スタック、開発環境
+- **structure.md**: ディレクトリ構造、コード規約、命名規則
+- **カスタム文書**: API規約、テスト方針、セキュリティポリシー等
+
+### 📋 Phase 1: 仕様作成
+
+| コマンド | 用途 | 使用タイミング |
+|---------|------|---------------|
+| `/kiro:spec-init [詳細なプロジェクト説明]` | プロジェクト説明から仕様構造を初期化 | 新機能開発開始時 |
+| `/kiro:spec-requirements [feature-name]` | 要件定義書の生成 | 仕様初期化後すぐ |
+| `/kiro:spec-design [feature-name]` | 技術設計書の生成 | 要件承認後 |
+| `/kiro:spec-tasks [feature-name]` | 実装タスクの生成 | 設計承認後 |
+
+### 📊 Phase 2: 進捗管理
+
+| コマンド | 用途 | 使用タイミング |
+|---------|------|---------------|
+| `/kiro:spec-status [feature-name]` | 現在の進捗とフェーズ確認 | 開発中随時 |
+
+## 3フェーズ承認ワークフロー
+
+このシステムの核心は、各フェーズで人間によるレビューと承認を必須とする
+
+```mermaid
+sequenceDiagram
+    participant D as Developer
+    participant C as Claude Code
+    participant H as Human Reviewer
+    
+    D->>C: "/kiro:spec-requirements feature"
+    C->>C: "要件生成"
+    C->>D: "requirements.md"
+    D->>H: "レビュー依頼"
+    H->>H: "レビュー・編集"
+    H->>D: "承認 (spec.json更新)"
+    
+    D->>C: "/kiro:spec-design feature"
+    C->>C: "設計生成（要件ベース）"
+    C->>D: "design.md"
+    D->>H: "レビュー依頼"
+    H->>H: "レビュー・編集"
+    H->>D: "承認 (spec.json更新)"
+    
+    D->>C: "/kiro:spec-tasks feature"
+    C->>C: "タスク生成（設計ベース）"
+    C->>D: "tasks.md"
+    D->>H: "レビュー依頼"
+    H->>H: "レビュー・編集"
+    H->>D: "承認 (spec.json更新)"
+    
+    D->>C: "実装開始"
+```
+
+## ベストプラクティス
+
+### ✅ 推奨事項
+
+1. **常にステアリングから開始**
+   - 新規プロジェクトでは必ず `/kiro:steering-init` を実行
+   - 既存プロジェクトでも `/kiro:steering-update` で最新化
+
+2. **フェーズを飛ばさない**
+   - 要件 → 設計 → タスクの順序を厳守
+   - 各フェーズで必ず人間によるレビューを実施
+
+3. **定期的な進捗確認**
+   - `/kiro:spec-status` で現在の状況を把握
+   - タスクの完了状況を適切に更新
+
+4. **ステアリングの保守**
+   - 大きな変更後は `/kiro:steering-update` を実行
+   - プロジェクトの成長に合わせて更新
+
+### ❌ 避けるべきこと
+
+1. **承認なしでの次フェーズ移行**
+   - spec.jsonの手動更新を忘れない
+
+2. **ステアリング文書の放置**
+   - 古い情報は開発の妨げになる
+
+3. **タスクステータスの未更新**
+   - 進捗が不明確になり管理が困難に
+
+## プロジェクト構造
+
+```
+.
+├── .claude/
+│   └── commands/          # スラッシュコマンド定義
+│       └── kiro/
+│           ├── spec-init.md
+│           ├── spec-requirements.md
+│           ├── spec-design.md
+│           ├── spec-tasks.md
+│           ├── spec-status.md
+│           ├── steering-init.md
+│           ├── steering-update.md
+│           └── steering-custom.md
+├── .kiro/
+│   ├── steering/          # ステアリング文書
+│   │   ├── product.md
+│   │   ├── tech.md
+│   │   └── structure.md
+│   └── specs/             # 機能仕様
+│       └── [feature-name]/
+│           ├── spec.json      # フェーズ承認状態
+│           ├── requirements.md # 要件定義書
+│           ├── design.md      # 技術設計書
+│           └── tasks.md       # 実装タスク
+├── CLAUDE.md              # メイン設定（下記いずれかの言語ファイルからコピー）
+├── CLAUDE_en.md           # 英語版設定
+├── CLAUDE_zh-TW.md        # 繁体字版設定
+├── README.md              # 日本語版 README
+├── README_en.md           # 英語版 README
+├── README_zh-TW.md        # 繁体字版 README
+└── （あなたのプロジェクトファイル）
+```
+
+## 自動化機能
+
+Claude Codeのフック機能により以下が自動化されている
+
+- タスク進捗の自動追跡
+- 仕様遵守のチェック
+- コンパクト時のコンテキスト保持
+- ステアリングドリフトの検出
+
+## トラブルシューティング
+
+### コマンドが動作しない場合
+1. `.claude/commands/` ディレクトリの存在を確認
+2. コマンドファイルの命名規則を確認（`command-name.md`）
+3. Claude Codeの最新バージョンを使用しているか確認
+
+### 承認フローで詰まった場合
+1. `spec.json` の承認フラグを手動で確認
+2. 前フェーズの承認が完了しているか確認
+3. `/kiro:spec-status` で現在の状態を診断
