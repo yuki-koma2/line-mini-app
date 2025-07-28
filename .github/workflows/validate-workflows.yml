@@ -1,0 +1,52 @@
+name: Validate Workflows
+
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          
+      - name: Install yamllint
+        run: |
+          python -m pip install --no-cache-dir --upgrade pip
+          pip install --no-cache-dir yamllint
+          
+      - name: Validate workflow syntax
+        run: |
+          echo "🔍 Validating GitHub Actions workflow files..."
+          find .github/workflows -name "*.yml" -o -name "*.yaml" -print0 | while IFS= read -r -d '' file; do
+            echo "Validating $file"
+            yamllint "$file"
+            if [ $? -eq 0 ]; then
+              echo "✅ $file is valid"
+            else
+              echo "❌ $file has validation errors"
+              exit 1
+            fi
+          done
+          echo "🎉 All workflow files are valid!"
+          
+      - name: Check workflow file permissions
+        run: |
+          echo "🔒 Checking workflow file permissions..."
+          find .github/workflows -name "*.yml" -o -name "*.yaml" -print0 | while IFS= read -r -d '' file; do
+            perms=$(stat -c "%a" "$file")
+            if [ "$perms" != "644" ]; then
+              echo "⚠️ Warning: $file has permissions $perms (expected 644)"
+            else
+              echo "✅ $file has correct permissions"
+            fi
+          done
