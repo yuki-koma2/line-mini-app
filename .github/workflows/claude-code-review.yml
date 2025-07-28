@@ -19,7 +19,7 @@ jobs:
     if: |
       github.event.pull_request.user.login == 'yuki-koma2' &&
       !contains(github.event.pull_request.title, '[skip-review]') &&
-      !contains(github.event.pull_request.title, '[WIP]')    
+      !contains(github.event.pull_request.title, '[WIP]')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
